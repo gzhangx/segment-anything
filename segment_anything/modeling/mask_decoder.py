@@ -103,8 +103,10 @@ class MaskDecoder(nn.Module):
             mask_slice = slice(1, None)
         else:
             mask_slice = slice(0, 1)
-        masks = masks[:, mask_slice, :, :]
+        print("mask shape before slice", masks.shape, "iou_pred",iou_pred.shape)
+        masks = masks[:, mask_slice, :, :]        
         iou_pred = iou_pred[:, mask_slice]
+        print("mask shape", masks.shape, "iou_pred", iou_pred.shape)
 
         # Prepare output
         return masks, iou_pred

@@ -99,6 +99,7 @@ class SamAutomaticMaskGenerator:
             point_grids is None
         ), "Exactly one of points_per_side or point_grid must be provided."
         if points_per_side is not None:
+            print("building points per slid point_grids", points_per_side, "crop_n_layers",crop_n_layers,"crop_n_points_downscale_factor",crop_n_points_downscale_factor)
             self.point_grids = build_all_layer_point_grids(
                 points_per_side,
                 crop_n_layers,
@@ -250,6 +251,7 @@ class SamAutomaticMaskGenerator:
         points_scale = np.array(cropped_im_size)[None, ::-1]
         points_for_image = self.point_grids[crop_layer_idx] * points_scale
 
+        print("ponts for image", "self.points_per_batch", self.points_per_batch, "points_for_image", points_for_image, "points_scale", points_scale)
         # Generate masks for this crop in batches
         data = MaskData()
         for (points,) in batch_iterator(self.points_per_batch, points_for_image):
@@ -285,6 +287,7 @@ class SamAutomaticMaskGenerator:
         orig_h, orig_w = orig_size
 
         # Run model on this batch
+        # print("points", points, "im_size",im_size)
         transformed_points = self.predictor.transform.apply_coords(points, im_size)
         in_points = torch.as_tensor(transformed_points, device=self.predictor.device)
         in_labels = torch.ones(in_points.shape[0], dtype=torch.int, device=in_points.device)

@@ -218,13 +218,16 @@ class SamPredictor:
         else:
             points = None
 
+        print(" ------- prompt_encoder", "boxes", boxes,"mask_input",mask_input)
         # Embed prompts
         sparse_embeddings, dense_embeddings = self.model.prompt_encoder(
             points=points,
             boxes=boxes,
             masks=mask_input,
         )
+        # print("dense_embeddings",dense_embeddings)
 
+        # print("self.features", self.features)
         # Predict masks
         low_res_masks, iou_predictions = self.model.mask_decoder(
             image_embeddings=self.features,
