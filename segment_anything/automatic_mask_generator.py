@@ -162,6 +162,14 @@ class SamAutomaticMaskGenerator:
         # Generate masks
         mask_data = self._generate_masks(image)
 
+        print("self.min_mask_region_area")
+        print(self.min_mask_region_area)
+        print(self.output_mode)
+        print("mask data")        
+        print(mask_data)
+
+        for keys, values in mask_data.items():
+            print(keys)
         # Filter small disconnected regions and holes in masks
         if self.min_mask_region_area > 0:
             mask_data = self.postprocess_small_regions(
@@ -196,13 +204,16 @@ class SamAutomaticMaskGenerator:
 
     def _generate_masks(self, image: np.ndarray) -> MaskData:
         orig_size = image.shape[:2]
+        print("orig_size", orig_size, image.shape)
         crop_boxes, layer_idxs = generate_crop_boxes(
             orig_size, self.crop_n_layers, self.crop_overlap_ratio
         )
 
+        print("crop_boxes, layer_idxs", crop_boxes, layer_idxs)
         # Iterate over image crops
         data = MaskData()
         for crop_box, layer_idx in zip(crop_boxes, layer_idxs):
+            print("processing ", crop_box, layer_idx)
             crop_data = self._process_crop(image, crop_box, layer_idx, orig_size)
             data.cat(crop_data)
 
@@ -242,6 +253,7 @@ class SamAutomaticMaskGenerator:
         # Generate masks for this crop in batches
         data = MaskData()
         for (points,) in batch_iterator(self.points_per_batch, points_for_image):
+            print("in batch_iterator(self.points_per_batch, points_for_image)", self.points_per_batch, len(points_for_image), len(points))
             batch_data = self._process_batch(points, cropped_im_size, crop_box, orig_size)
             data.cat(batch_data)
             del batch_data
