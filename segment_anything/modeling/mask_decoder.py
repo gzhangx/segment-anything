@@ -48,6 +48,7 @@ class MaskDecoder(nn.Module):
 
         self.iou_token = nn.Embedding(1, transformer_dim)
         self.num_mask_tokens = num_multimask_outputs + 1
+        print("mask_decoder.py: self.num_mask_tokens=",self.num_mask_tokens, "transformer_dim",transformer_dim)
         self.mask_tokens = nn.Embedding(self.num_mask_tokens, transformer_dim)
 
         self.output_upscaling = nn.Sequential(
