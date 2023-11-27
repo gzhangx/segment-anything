@@ -64,13 +64,23 @@ def main(args: argparse.Namespace) -> None:
         #bbox_x0': '740', 'bbox_y0': '76', 'bbox_w': '22', 'bbox_h
         maskFileName = os.path.join(masksDir, itm["id"]+'.png')
         print(maskFileName)
-        maskFile = cv2.imread(maskFileName)
+        maskFile = cv2.imread(maskFileName, 0)
+        
         x = int(itm["bbox_x0"])
         w = int(itm["bbox_w"])
         y = int(itm["bbox_y0"])
         h = int(itm["bbox_h"])
-        crop = image[y: y+h, x: x+w]
+        
+        afterMsk = cv2.bitwise_and(image, image, mask = maskFile)
+        crop = afterMsk[y: y+h, x: x+w]
+        origCrop = image[y: y+h, x: x+w]
         cv2.imwrite(os.path.join(outdirName, itm["id"]+'.png'), crop)
+        cv2.imwrite(os.path.join(outdirName, itm["id"]+'_orig.png'), origCrop)
+
+        
+        
+        #cv2.imwrite(os.path.join(outdirName, itm["id"]+'_aftermask.png'), afterMsk)
+        #cv2.imwrite(os.path.join(outdirName, itm["id"]+'_mask.png'), crop)
 
 
 if __name__ == "__main__":
