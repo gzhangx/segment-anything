@@ -29,7 +29,13 @@ parser.add_argument(
     ),
 )
 
-def main(args: argparse.Namespace) -> None:
+class BaseAndFileName:
+    def __init__(self, baseDir, fileName):
+        self.baseDir = baseDir
+        self.fileName = fileName
+
+
+def main(args: BaseAndFileName) -> None:
     print("mask to img...")
     #os.makedirs(args.output, exist_ok=True)
     origFileName = os.path.join(args.baseDir, args.fileName+'.png')
@@ -85,4 +91,5 @@ def main(args: argparse.Namespace) -> None:
 
 if __name__ == "__main__":
     args = parser.parse_args()
+    ag = BaseAndFileName(args.baseDir, args.fileName)
     main(args)

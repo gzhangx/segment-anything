@@ -32,6 +32,7 @@ parser.add_argument(
     "--output",
     type=str,
     required=True,
+    default="../out/test",
     help=(
         "Path to the directory where masks will be output. Output will be either a folder "
         "of PNGs per image or a single json with COCO-style masks."
@@ -42,6 +43,7 @@ parser.add_argument(
     "--model-type",
     type=str,
     required=True,
+    default="vit_l",
     help="The type of model to load, in ['default', 'vit_h', 'vit_l', 'vit_b']",
 )
 
@@ -49,6 +51,7 @@ parser.add_argument(
     "--checkpoint",
     type=str,
     required=True,
+    default="../checkpoints/sam_vit_l_0b3195.pth",
     help="The path to the SAM checkpoint to use for mask generation.",
 )
 
