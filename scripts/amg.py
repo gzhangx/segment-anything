@@ -152,7 +152,7 @@ amg_settings.add_argument(
 )
 
 
-def write_masks_to_folder(masks: List[Dict[str, Any]], path: str) -> None:
+def write_masks_to_folder(masks: List[Dict[str, Any]], path: str, image) -> None:
     header = "id,area,bbox_x0,bbox_y0,bbox_w,bbox_h,point_input_x,point_input_y,predicted_iou,stability_score,crop_box_x0,crop_box_y0,crop_box_w,crop_box_h"  # noqa
     metadata = [header]
     for i, mask_data in enumerate(masks):
@@ -170,6 +170,21 @@ def write_masks_to_folder(masks: List[Dict[str, Any]], path: str) -> None:
         ]
         row = ",".join(mask_metadata)
         metadata.append(row)
+        bbox = mask_data["bbox"]
+        x = int(bbox[0])
+        y = int(bbox[1])
+        w = int(bbox[2])
+        h = int(bbox[3])
+
+        print(x,y,w,h)
+        #mask = cv2.imread(os.path.join(path, filename), 0)
+        print(mask.shape, image.shape)
+        print(mask.dtype, (mask.astype(cv2.numpy.uint8)).dtype, image.dtype)
+        afterMsk = cv2.bitwise_and(image, image, mask = mask.astype(cv2.numpy.uint8))
+        crop = afterMsk[y: y+h, x: x+w]
+        origCrop = image[y: y+h, x: x+w]
+        cv2.imwrite(os.path.join(path, f"{i}_crop.png"), crop)
+        cv2.imwrite(os.path.join(path, f"{i}_cropOrig.png"), origCrop)
     metadata_path = os.path.join(path, "metadata.csv")
     with open(metadata_path, "w") as f:
         f.write("\n".join(metadata))
@@ -219,6 +234,7 @@ def main(args: argparse.Namespace) -> None:
         if image is None:
             print(f"Could not load '{t}' as an image, skipping...")
             continue
+        origImg = image
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
         masks = generator.generate(image)
@@ -228,7 +244,7 @@ def main(args: argparse.Namespace) -> None:
         save_base = os.path.join(args.output, base)
         if output_mode == "binary_mask":
             os.makedirs(save_base, exist_ok=False)
-            write_masks_to_folder(masks, save_base)
+            write_masks_to_folder(masks, save_base, origImg)
         else:
             save_file = save_base + ".json"
             with open(save_file, "w") as f:
