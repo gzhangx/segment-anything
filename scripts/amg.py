@@ -183,8 +183,9 @@ def write_masks_to_folder(masks: List[Dict[str, Any]], path: str, image) -> None
         afterMsk = cv2.bitwise_and(image, image, mask = mask.astype(cv2.numpy.uint8))
         crop = afterMsk[y: y+h, x: x+w]
         origCrop = image[y: y+h, x: x+w]
-        cv2.imwrite(os.path.join(path, f"{i}_crop.png"), crop)
-        cv2.imwrite(os.path.join(path, f"{i}_cropOrig.png"), origCrop)
+        posStr = f"({x},{y},{w},{h})"
+        cv2.imwrite(os.path.join(path, f"{i}{posStr}_crop.png"), crop)
+        cv2.imwrite(os.path.join(path, f"{i}{posStr}_cropOrig.png"), origCrop)
     metadata_path = os.path.join(path, "metadata.csv")
     with open(metadata_path, "w") as f:
         f.write("\n".join(metadata))
